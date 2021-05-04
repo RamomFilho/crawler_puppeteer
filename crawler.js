@@ -10,7 +10,7 @@ function replaceAll(string, search, replace) {
 
 async function run() {
     const browser = await puppeteer.launch({
-        // headless: false
+        headless: false
     });
     const page = await browser.newPage();
     await page.goto('http://legendas.tv/login');
@@ -20,9 +20,8 @@ async function run() {
     await page.keyboard.type(args[3]);
     await page.click('#UserLoginForm > button')
 
-    writer.writeFile(`${credenciais['search']}.json`, '', function (err) {
+    writer.writeFile(`${data['search']}.json`, '', function (err) {
         if (err) return console.log(err);
-        console.log('File Created!');
     });
 
     await page.setRequestInterception(true);
@@ -40,7 +39,7 @@ async function run() {
     var BaseURL = 'http://legendas.tv'
 
     let firstURLToSearch = 'http://legendas.tv/legenda/busca/#/1/-/0/-'
-    let textSearch = replaceAll(credenciais['search'], ' ', '%20')
+    let textSearch = replaceAll(data['search'], ' ', '%20')
 
     let searchURL = firstURLToSearch.replace('#', textSearch)
 
@@ -87,7 +86,7 @@ async function run() {
                 return el ? el.innerText : false;
             }, firstElementSelector1.replace('div:nth-child(1)', `div:nth-child(${i})`))
 
-                array1 = credenciais['search'].toUpperCase().split(' ')
+                array1 = data['search'].toUpperCase().split(' ')
 
             if (!Name.toUpperCase().includes(array1[1])) {
                 continue;
@@ -145,7 +144,7 @@ async function run() {
                 return el ? el.innerText : false;
             }, firstElementSelector2.replace('div:nth-child(1)', `div:nth-child(${i})`))
 
-                array1 = credenciais['search'].toUpperCase().split(' ')
+                array1 = data['search'].toUpperCase().split(' ')
 
                 if (!Name.toUpperCase().includes(array1[1])) {
                     continue;
@@ -211,15 +210,16 @@ async function run() {
         page_number++;
     }
 
-    writer.appendFile(`${credenciais['search']}.json`, `${JSON.stringify(legends)}`, function (err) {
+    writer.appendFile(`${data['search']}.json`, `${JSON.stringify(legends)}`, function (err) {
         if (err) throw err;
     });
 
     console.log(`Foram encontradas ${legends.length} legendas!`)
+    await browser.close();
 }
 
 run();
 
-const credenciais = {
+const data = {
     search: 'Os Simpsons'
 }
